@@ -1,0 +1,15 @@
+langchain_core
+langchain-openai 
+langchain-anthropic
+langchain_google_genai
+vapi_server_sdk
+retell-sdk
+hubspot-api-client
+pyairtable
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
+python-dotenv
+uvicorn
+gunicorn
+fastapi

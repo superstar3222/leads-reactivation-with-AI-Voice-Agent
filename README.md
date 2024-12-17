@@ -34,19 +34,7 @@ Several frameworks are available for building voice agents, and this repository 
 - Both **VAPI** and **Retell AI** are no-code platforms that support a variety of LLMs providers and voice models for developing Voice AI agents, including OpenAI’s real-time APIs. They simplify the Voice agent development process, offering many features like direct telephony integration with Twilio, custom tool integration, interruption handling, and fallback responses during delays, etc.  
 - **OpenAI’s Real-Time API** (speech-to-speech model) is currently the fastest voice technology available. You can either use it via platforms like VAPI or Retell AI for convenience or integrate it directly using openai to avoid additional platform fees.  
 
-For this project, I used **VAPI** for the voice agent’s development, but, the code is designed to be adaptable and can be configured to work with **Retell AI** or **OpenAI’s Real-Time API**. 
-
-## AI Voice Agent Frameworks
-
-Several frameworks are available for building voice agents, and this repository includes the necessary code for the most popular options: **VAPI**, **Retell AI**, and **OpenAI’s Real-Time API** (not fully implemented yet).
-
-- **VAPI** is a no-code platform designed to simplify the development of voice agents. It supports various large language models (LLMs) and voice models, allowing developers to integrate features like telephony through Twilio, custom tool integration, interruption handling, and fallback responses during delays.
-
-- **Retell AI** is another no-code platform that offers similar functionalities to VAPI. It supports multiple LLMs (currently GPT-4o and Claude-sonnet) and provides tools for building conversational agents without requiring extensive programming knowledge.
-
-- **OpenAI’s Real-Time API** is currently the fastest voice technology available. It provides a speech-to-speech model that can be utilized through platforms like VAPI or Retell AI for convenience or integrated directly via OpenAI to avoid additional platform fees. This API enables real-time processing of audio inputs and outputs, facilitating natural conversations with users. 
-
-For this project, I used **VAPI** for the voice agent’s development; however, the code is designed to be adaptable and can be configured to work with **Retell AI** or **OpenAI’s Real-Time API**. 
+For this project, I used **VAPI** for the voice agent’s development, but, the code is designed to be adaptable and can be configured to work with **Retell AI** or **OpenAI’s Real-Time API**.
 
 ---
 
@@ -159,9 +147,21 @@ To test the setup, you can simulate a call to your own phone number:
 
 1. Ensure the server is running and accessible.  
 2. Trigger the automation route `/execute` using Postman or directly via the API docs dashboard.  
-3. You should receive a call from the voice agent.  
+3. The automation expects a list of lead IDs. You can either specify specific IDs or leave it empty to fetch any new leads.  
+4. You should receive a call from the voice agent.  
 
-After the call, check the CRM for updates or view the call logs directly in the Vapi dashboard.  
+After the call, check the CRM for updates or view the call logs directly in the VAPI dashboard.  
+
+---
+
+### Customizing the Automation
+
+If you want to integrate another CRM or customize the behavior of the automation, please refer to the [Customization Guide](/docs/customization.md). The guide covers:
+
+- **Integrating Custom CRMs**: Instructions for adding your CRM to the system by extending the base class.
+- **Customizing Lead Statuses**: Learn how to modify the statuses used to filter and fetch leads.
+- **Updating CRM Fields**: Tailor the `update_CRM` function to handle different field names or additional fields.
+- **Customizing Prompts**: Update the prompts used for AI voice agent and the post call analysis (all pormpts are in `src/prompts.py`).
 
 ---
 
@@ -172,8 +172,3 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 ## Contact
 
 For questions or suggestions, contact me at `aymenMir1001@gmail.com`.
-
-
-
-
-# leads-reactivation-with-AI-Voice-Agent
