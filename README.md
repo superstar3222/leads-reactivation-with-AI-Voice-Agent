@@ -160,7 +160,7 @@ If you want to integrate another CRM or customize the behavior of the automation
 
 - **Integrating Custom CRMs**: Instructions for adding your CRM to the system by extending the base class.
 - **Customizing Lead Statuses**: Learn how to modify the statuses used to filter and fetch leads.
-- **Updating CRM Fields**: Tailor the `update_CRM` function to handle different field names or additional fields.
+- **Updating CRM Fields**: Tailor the automation to handle different CRM field names or additional fields.
 - **Customizing Prompts**: Update the prompts used for AI voice agent and the post call analysis (all pormpts are in `src/prompts.py`).
 
 ---
