@@ -131,6 +131,8 @@ For this project, I used **VAPI** for the voice agent’s development, but, the 
      python scripts/create_or_update_assistant.py  
      ```  
 
+     Copy the assisatnt id to your `.env` file (`VAPI_ASSISTANT_ID`).
+
      Note: The assistant configuration uses GPT-4o by default. You can switch to another supported LLM by modifying the configuration before running the script.  
 
    - Import your Twilio phone number into Vapi. Ensure you have added your Twilio credentials (watch this quick [tutorial](https://www.youtube.com/watch?v=aM79mkF6UkA)), then run:  
@@ -138,6 +140,8 @@ For this project, I used **VAPI** for the voice agent’s development, but, the 
      ```sh  
      python scripts/import_phone_number.py  
      ```  
+
+     Copy the Vapi phone number id to your `.env` file (`VAPI_PHONE_ID`).
 
 ---
 
