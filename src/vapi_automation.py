@@ -1,14 +1,12 @@
 import os
-from src.voice_agent_providers.vapi.vapi_ai import VapiAI
-from src.utils import get_current_date_time, calculate_duration_in_minutes
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
-from langchain_openai import ChatOpenAI
-from .structured_io import CallAnalysisResponse, Lead
-from .prompts import CALL_ANALYSIS_PROMPT
-from .tools.calendar_tool import book_appointement
+from src.base.voice_agent_providers.vapi.vapi_ai import VapiAI
+from src.tools.calendar_tool import book_appointement
+from src.tools.call_analysis import analyze_call_transcript
+from src.utils import Lead, get_current_date_time, calculate_duration_in_minutes
 
 
+# Tools used directly by the AI VOICE agent
+# For this case, the agent needs only a Book appointement tool
 TOOLS = {
     "bookAppointment": book_appointement
 }
@@ -33,15 +31,15 @@ class VapiAutomation(VapiAI):
         leads = [
             Lead(
                 id=lead["id"],
-                first_name=lead.get("first name", ""),
-                last_name=lead.get("last name", ""),
-                address=lead.get("address", ""),
-                email=lead.get("email", ""),
-                phone=lead.get("phone", ""),
+                first_name=lead.get("First Name", ""),
+                last_name=lead.get("Last Name", ""),
+                address=lead.get("Address", ""),
+                email=lead.get("Email", ""),
+                phone=lead.get("Phone", ""),
             )
             for lead in raw_leads
         ]
-        print(f"Loaded {len(leads)} leads: {leads}")
+        print(f"Loaded {len(leads)} leads\n: {leads}")
         
         return leads
 
@@ -62,14 +60,15 @@ class VapiAutomation(VapiAI):
             "phone_number_id": os.getenv("VAPI_PHONE_ID"),
             "assistant_id": os.getenv("VAPI_ASSISTANT_ID"),
             "customer": {
-                "number": lead_data["phone"],
+                "number": lead_data.phone,
             },
             "assistant_overrides": {
                 "variable_values": {
-                    "firstName": lead_data["first_name"],
-                    "lastName": lead_data["last_name"],
-                    "email": lead_data["email"],
-                    "address": lead_data["address"],
+                    "leadID": lead_data.id,
+                    "firstName": lead_data.first_name,
+                    "lastName": lead_data.last_name,
+                    "email": lead_data.email,
+                    "address": lead_data.address,
                     "date": get_current_date_time()
                 }
             }
@@ -88,16 +87,14 @@ class VapiAutomation(VapiAI):
         return {
             "call_id": response["call"]["id"],
             "status": response["call"]["status"],
-            "duration": calculate_duration_in_minutes(
-                response["startedAt"], response["endedAt"]
-            ),
+            "duration": response["durationMinutes"],
             "cost": response["cost"],
             "endedReason": response["endedReason"],
             "transcript": response["artifact"]["transcript"],
             "lead_info": response["call"]["assistantOverrides"]["variableValues"]
         }
 
-    def evaluate_call(self, call_outputs: dict) -> dict:
+    def evaluate_call_and_update_crm(self, call_outputs: dict) -> dict:
         """
         Perform post-call analysis and update the CRM with the results.
 
@@ -107,19 +104,9 @@ class VapiAutomation(VapiAI):
         Returns:
             dict: Updated lead information.
         """
-        # Prepare the analysis prompt for LLM
-        call_analysis_prompt = ChatPromptTemplate.from_template(CALL_ANALYSIS_PROMPT)
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
-        structured_llm = llm.with_structured_output(CallAnalysisResponse)
-        evaluate_call = call_analysis_prompt | structured_llm | JsonOutputParser()
-
-        # Invoke LLM for analysis
-        output = evaluate_call.invoke({
-            "name": f"{call_outputs['lead_info']['firstName']} {call_outputs['lead_info']['lastName']}",
-            "address": call_outputs['lead_info']['address'],
-            "email": call_outputs['lead_info']['email'],
-            "transcript": call_outputs['transcript']
-        })
+        # Transcript analysis
+        lead_name = f'{call_outputs["lead_info"]["firstName"]} {call_outputs["lead_info"]["lastName"]}'
+        output = analyze_call_transcript(lead_name, call_outputs['transcript'])
 
         # Update CRM, Make sure to use the correct field names
         updates = {
@@ -130,11 +117,21 @@ class VapiAutomation(VapiAI):
             "Cost": call_outputs["cost"],
             "End Reason": call_outputs["endedReason"],
             "Transcript": call_outputs["transcript"],
-            "Call Summary": output.get("call_summary"),
-            "Interested": output.get("lead_interested"),
+            "Call Summary": output.get("summary"),
+            "Interested": output.get("interested"),
             "Comment": output.get("justification")
         }
 
-        self.lead_loader.update_record(call_outputs["lead_info"]["id"], updates)
+        self.lead_loader.update_record(call_outputs["lead_info"]["leadID"], updates)
 
         return updates
+    
+    def post_call_processing(self, call_outputs):
+        """
+        Post call analysis function invoked by the base VAPIAI class
+        upon receiving the end call event for Vapi
+
+        Args:
+            call_outputs (dict): Processed call outputs from the Vapi.
+        """
+        self.evaluate_call_and_update_crm(call_outputs)

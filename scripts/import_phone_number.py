@@ -1,5 +1,5 @@
 import os
-from base.voice_agent_providers.vapi import VapiAI
+from src.base.voice_agent_providers.vapi import VapiAI
 from dotenv import load_dotenv
 
 load_dotenv()

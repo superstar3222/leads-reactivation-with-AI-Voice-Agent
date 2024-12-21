@@ -1,11 +1,10 @@
 import os
-from base.voice_agent_providers.vapi import VapiAI
+from src.base.voice_agent_providers.vapi import VapiAI
 from dotenv import load_dotenv
 
 load_dotenv()
 
 tool_config = {
-    "type": "function",
     "messages": [
         {
             "type": "request-start",
@@ -38,23 +37,23 @@ tool_config = {
         },
         "description": "Books an appointment with the provided client details."
     },
-    "async": False,
+    "async_": False,
     "server": {
-        "url": f"{os.getenv("SERVER_URL")}/webhook"
+        "url": f"{os.getenv('SERVER_URL')}/webhook"
     }
 }
 
 vapi_client = VapiAI()
 
 # Create a new tool with the above config
-output = vapi_client.create_tool(tool_config)
-print(output)
+# output = vapi_client.create_tool(tool_config)
+# print(output)
 
-# Get the tool id, necessary for creating/updating assistant
-print(output["id"])
+# # Get the tool id, necessary for creating/updating assistant
+# print(output["id"])
 
 
 # Update an existing tool with the above config
-# tool_id = ""
-# output = vapi_client.update_tool(tool_id, tool_config)
-# print(output)
+tool_id = "4befe734-cca9-44af-895a-8b2a0aa4f731"
+output = vapi_client.update_tool(tool_id, tool_config)
+print(output)

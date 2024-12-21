@@ -36,27 +36,14 @@ However, these statuses can be customized to match the specific lead status valu
             for lead_id in lead_ids:
                 lead = crm_api.get_lead(lead_id)  # Replace with your CRM API call
                 if lead:
-                    leads.append({
-                        "id": lead["id"],
-                        "first_name": lead.get("firstName", ""),
-                        "last_name": lead.get("lastName", ""),
-                        "email": lead.get("email"),
-                        "address": lead.get("address", ""),
-                        "phone": lead.get("phone", "")
-                    })
+                    # Extract all fields provided by database
+                    lead = {"id": record["id"], **record.get("fields", {})}
             return leads
         else:
             # Fetch leads matching the status
             records = crm_api.get_leads_by_status(status)  # Replace with your CRM API call
             return [
-                {
-                    "id": record["id"],
-                    "first_name": record.get("firstName", ""),
-                    "last_name": record.get("lastName", ""),
-                    "email": record.get("email"),
-                    "address": record.get("address", ""),
-                    "phone": record.get("phone", "")
-                }
+                {"id": record["id"], **record.get("fields", {})}  # Extract all fields provided by database dynamically
                 for record in records
             ]
 
@@ -92,19 +79,42 @@ However, these statuses can be customized to match the specific lead status valu
 ## Customizing your CRM Field Names
 
 ### Overview
-By default, the `vapi_automation::evaluate_call` function uses a my own set of data fields (e.g., "Status", "Score", "Analysis Reports", "Outreach Report", "Last Contacted") when updating a CRM record. However, different CRMs or database schemas may use different field names or additional fields that need to be handled.
+By default, the `vapi_automation::load_leads` and `vapi_automation::evaluate_call_and_update_crm` functions use field names that are specific to my own database (e.g., "Status", "Score", "Analysis Reports", "Outreach Report", "Last Contacted"). However, if your CRM or database uses different field names or additional fields, you will need to update the code to reflect those differences.
 
-### Steps to Customize the `vapi_automation::evaluate_call` Function
+### Steps to Customize the Functions
 
-1. **Identify the Fields in Your CRM**
-   Each CRM or database may have different field names or additional fields. Start by identifying which fields you need to map from your system to the CRM. This may include:
-   - Custom field names (e.g., `lead_score` instead of `Score`)
-   - Additional fields (e.g., `custom_field_1`, `custom_field_2`)
+1. **Modify the `vapi_automation::load_leads` Function**
+   The `load_leads` function fetches lead data from a database and structures it using specific field names (e.g., "First Name", "Last Name", "Email", etc.). If your database uses different field names, you will need to modify this function accordingly.
 
-2. **Modify the `new_data` Dictionary**
-   The `new_data` dictionary in the `update_CRM` function is where the lead data is prepared before updating the CRM. You can modify this dictionary to include your custom fields.
+   For example, if your database uses `first_name` instead of `First Name`, update the code like this:
 
-   For example, if your CRM has a custom field `custom_lead_score` instead of `Score`, you can modify the dictionary like this:
+   ```python
+    def load_leads(self, lead_ids):
+        raw_leads = self.lead_loader.fetch_records(lead_ids=lead_ids)
+        if not raw_leads:
+            return []
+        
+        # Structure the leads
+        leads = [
+            Lead(
+                id=lead["id"],
+                first_name=lead.get("first_name", ""),
+                last_name=lead.get("last_name", ""),
+                address=lead.get("address", ""),
+                email=lead.get("email", ""),
+                phone=lead.get("phone", ""),
+            )
+            for lead in raw_leads
+        ]
+        print(f"Loaded {len(leads)} leads: {leads}")
+        
+        return leads
+   ```
+
+   **IMPORTANT**: The provided field names are based on the structure I use for my own database. If your database uses different field names, just update the code to reflect that.
+
+2. **Modify the `vapi_automation::evaluate_call_and_update_crm` Function**
+   In the `evaluate_call_and_update_crm` function, the `new_data` dictionary is used to prepare lead data before updating the CRM. You can modify this dictionary to include the correct field names for your CRM. For example, if your CRM has a custom field `custom_lead_score` instead of `Score`, you can modify the dictionary like this:
 
    ```python
     updates = {
@@ -124,4 +134,4 @@ By default, the `vapi_automation::evaluate_call` function uses a my own set of d
    ```
 
 ### Notes:
-- **Field Names**: Always check the database to ensure that the field names you're using match the database schema (names are case-sensitive).
+- **Field Names**: The provided field names are based on the structure I use for my own database. If your database uses different field names, just update the code to reflect that.

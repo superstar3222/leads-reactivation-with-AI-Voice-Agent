@@ -3,6 +3,8 @@ import hubspot
 from hubspot.crm.contacts import SimplePublicObjectInput, ApiException
 from .lead_loader_base import LeadLoaderBase
 
+HUBSPOT_CONTACTS_PROPERTIES = ["email", "firstname", "lastname", "hs_lead_status", "address", "phone"]
+
 class HubSpotLeadLoader(LeadLoaderBase):
     def __init__(self, access_token=None):
         # Use access_token instead of environment variable for more flexibility
@@ -19,42 +21,32 @@ class HubSpotLeadLoader(LeadLoaderBase):
                 for lead_id in lead_ids:
                     contact = self.client.crm.contacts.basic_api.get_by_id(
                         contact_id=lead_id,
-                        properties=["email", "firstname", "lastname", "hs_lead_status", "address", "phone"]
+                        properties=HUBSPOT_CONTACTS_PROPERTIES
                     )
                     if contact:
-                        leads.append({
-                            "id": contact.id,
-                            "first name": contact.properties.get("firstname", ""),
-                            "last name": contact.properties.get("lastname", ""),
-                            "email": contact.properties.get("email"),
-                            "address": contact.properties.get("address", ""),
-                            "phone": contact.properties.get("phone", ""),
-                            "status": contact.properties.get("hs_lead_status", "")
-                        })
+                        # Merge id and properties into a single dictionary
+                        lead = {"id": contact.id, **(contact.properties or {})}
+                        leads.append(lead)
                 return leads
             else:
                 # Fetch leads by status filter
                 api_response = self.client.crm.contacts.basic_api.get_page(
                     limit=100,
-                    properties=["email", "firstname", "lastname", "hs_lead_status", "address", "phone"],
+                    properties=HUBSPOT_CONTACTS_PROPERTIES,
                     archived=False,
                 )
                 records = []
                 for contact in api_response.results:
                     lead_status = contact.properties.get("hs_lead_status")
                     if lead_status == status:
-                        records.append({
-                            "id": contact.id,
-                            "first name": contact.properties.get("firstname", ""),
-                            "last name": contact.properties.get("lastname", ""),
-                            "email": contact.properties.get("email"),
-                            "address": contact.properties.get("address", ""),
-                            "phone": contact.properties.get("phone", "")
-                        })
+                        # Merge id and properties into a single dictionary
+                        lead = {"id": contact.id, **(contact.properties or {})}
+                        records.append(lead)
                 return records
         except ApiException as e:
             print(f"Error fetching records from HubSpot: {e}")
             return []
+
 
     def update_record(self, lead_id, updates: dict):
         """

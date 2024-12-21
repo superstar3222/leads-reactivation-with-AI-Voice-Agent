@@ -51,7 +51,7 @@ def book_appointement(title, description, start):
         }
 
         event = service.events().insert(calendarId='primary', body=event).execute()
-        return f"Event created successfully. Event ID: {event.get('id')}"
+        return f"Appoitement Booked successfully."
 
     except HttpError as error:
         return f"An error occurred: {error}"

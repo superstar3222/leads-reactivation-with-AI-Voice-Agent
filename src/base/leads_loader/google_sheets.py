@@ -45,21 +45,13 @@ class GoogleSheetLeadLoader(LeadLoaderBase):
             for i, row in enumerate(rows[1:], start=2):  # Start from row 2 for data
                 record = dict(zip(headers, row))
                 record["id"] = f"{i}"  # Add row number as an ID
-                
-                formatted_record = {
-                    "id": record["id"],
-                    "first name": record.get("First Name", ""),
-                    "last name": record.get("Last Name", ""),
-                    "email": record.get("Email", ""),
-                    "address": record.get("Address", ""),
-                    "phone": record.get("Phone", "")
-                }
 
                 if lead_ids:
                     if record["id"] in lead_ids:
-                        records.append(formatted_record)
+                        records.append(record)
                 elif record.get("Status") == status:
-                    records.append(formatted_record)
+                    records.append(record)
+                    
             return records
         except HttpError as e:
             print(f"Error fetching records from Google Sheets: {e}")

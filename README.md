@@ -60,8 +60,8 @@ For this project, I used **VAPI** for the voice agent’s development, but, the 
 
 ## Tech Stack  
 
-- **[Langchain](https://python.langchain.com/docs/introduction/)**.
-- **[Vapi](https://dashboard.vapi.ai/)**  
+- **[LiteLLM](https://www.litellm.ai/)**: Offers easy access to multiple LLMs (GPT-4o, Claude, Gemini, etc) with standard output format.
+- **[Vapi](https://dashboard.vapi.ai/)**
 - **[Retell AI](https://www.retellai.com/)**
 - **[OpenAI](https://platform.openai.com/docs/overview)**
 
@@ -72,7 +72,7 @@ For this project, I used **VAPI** for the voice agent’s development, but, the 
 ### Prerequisites  
  
 - Python 3.9+  
-- Account and API keys for **Vapi** or **Retell AI**  
+- Account and API key for **Vapi** 
 - OpenAI API key (or alternative LLMs like Claude or Groq)  
 - Twilio phone number  
 - Google API credentials (for Google Calendar or sheets when used as leads database).

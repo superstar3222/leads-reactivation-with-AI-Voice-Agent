@@ -1,7 +1,4 @@
-langchain_core
-langchain-openai 
-langchain-anthropic
-langchain_google_genai
+litellm
 vapi_server_sdk
 retell-sdk
 hubspot-api-client

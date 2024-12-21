@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from base.leads_loader.airtable import AirtableLeadLoader
+from src.base.leads_loader.airtable import AirtableLeadLoader
 from src.vapi_automation import VapiAutomation
 from dotenv import load_dotenv
 
@@ -58,10 +58,11 @@ async def execute(payload: dict):
             
             # Structure the required call parameters in Vapi format
             call_params = automation.get_call_input_params(lead)
+            print("Call Inputs:\n", call_params)
             
             # Initiate the call
-            print(f"Calling Lead {lead['id']}...")
-            automation.make_call(call_params)
+            print(f"Calling Lead {lead.id}...")
+            output = await automation.make_call(call_params)
             
             # await 1s
             time.sleep(1)
@@ -77,7 +78,7 @@ async def execute(payload: dict):
 @app.post("/webhook")
 async def handle_webhook(request: Request):
     """
-    Handle incoming webhook requests dynamically.
+    Handle incoming webhook requests from Vapi.
     """
     try:
         response = await automation.handle_webhook_call(request)

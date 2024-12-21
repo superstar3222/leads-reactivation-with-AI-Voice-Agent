@@ -17,30 +17,18 @@ class AirtableLeadLoader(LeadLoaderBase):
             for lead_id in lead_ids:
                 record = self.table.get(lead_id)
                 if record:
-                    leads.append({
-                        "id": record["id"],
-                        "first name": record["fields"].get("First Name", ""),
-                        "last name": record["fields"].get("Last Name", ""),
-                        "email": record["fields"].get("Email"),
-                        "address": record["fields"].get("Address", ""),
-                        "phone": record["fields"].get("Phone", "")
-                    })
+                    # Merge id and fields into a single dictionary
+                    lead = {"id": record["id"], **record.get("fields", {})}
+                    leads.append(lead)
             return leads
         else:
-            # Fetch leads by status filter
+            # Fetch leads by status filter (based on "Status" field)
+            # You can choose your own field for filter with different naming
             records = self.table.all(formula=match({"Status": status}))
             return [
-                {
-                    "id": record["id"],
-                    "first name": record["fields"].get("First Name", ""),
-                    "last name": record["fields"].get("Last Name", ""),
-                    "email": record["fields"].get("Email"),
-                    "address": record["fields"].get("Address", ""),
-                    "phone": record["fields"].get("Phone", "")
-                }
+                {"id": record["id"], **record.get("fields", {})}
                 for record in records
             ]
-
 
     def update_record(self, lead_id, updates: dict):
         """
