@@ -17,12 +17,12 @@ Many businesses have a large database of **warm leads** - people who showed inte
 
 ## The Solution: AI Voice Agent for Lead Reactivation
 
-This project offers a powerful solution: an **AI voice agent** that automatically calls your inactive leads to re-engage them. But it does more than just make calls. Our **AI system** helps you understand *why* those leads went cold in the first place, giving you valuable insights to improve your entire sales process. Instead of relying solely on ineffective email campaigns, our system makes personalized calls to **reactivate leads**, qualify them, update your CRM, and provide actionable data on your sales pipeline. This means you can:
+This project offers a powerful solution: an **AI voice agent** that automatically calls your inactive leads to re-engage them. But it does more than just make calls. This **AI system** helps you understand *why* those leads went cold in the first place, giving you valuable insights to improve your entire sales process. Instead of relying solely on ineffective email campaigns, the system makes personalized calls to **reactivate leads**, qualify them, update your CRM, and provide actionable data on your sales pipeline. This means you can:
 
 *   **Reactivate cold leads:** Turn those old leads back into potential customers.
 *   **Increase sales:** Convert more leads into paying customers.
 *   **Save time and resources:** Automate the outreach process, freeing up your sales team.
-*   **Improve lead qualification:**  Our system analyzes conversations to identify high-potential leads.
+*   **Improve lead qualification:** the system analyzes conversations to identify high-potential leads.
 *   **Uncover sales process bottlenecks:** By analyzing conversations with lost leads, the AI can identify common reasons for disinterest. This could reveal issues like unclear messaging, pricing concerns, or missing features, helping you optimize your sales strategy and improve future conversion rates.
 *   **Generate more revenue from existing leads**
 
@@ -39,7 +39,7 @@ This project offers a powerful solution: an **AI voice agent** that automaticall
 3.  **Communication with VAPI**
     During and after each call, **VAPI** sends data (such as call states, transcripts, recordings, and summaries) back to the server via a **webhook**. Two key webhook events are of interest:
     *   **Tool Calls:** When the agent schedules a follow-up appointment with a lead using the integrated **booking tool**.
-    *   **End-Call Report:** A **detailed report** is sent at the end of each call, containing the **transcript**, **cost**, **duration**, and **conversation messages**. This data is used for our **post-call analysis** and **CRM updates**.
+    *   **End-Call Report:** A **detailed report** is sent at the end of each call, containing the **transcript**, **cost**, **duration**, and **conversation messages**. This data is used for the **post-call analysis** and **CRM updates**.
 
 4.  **Lead Qualification and CRM Update**
     Once the **end-call report** is received, the system triggers a **post-call analysis** function. This function leverages an **AI agent** (using GPT-4o or alternatives) to analyze the transcript, determine the lead's level of interest, and generate **actionable notes** for the sales team. Finally, the **CRM is updated** with all relevant call details, including the lead's status.
